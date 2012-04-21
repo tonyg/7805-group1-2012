@@ -76,30 +76,38 @@ where $k>1$. In order to accomplish this, we prove and make use of the
 fact that a non-deterministic Turing machine can sort in time $n \log
 n$, where $n$ is the length of the input.
 
-\section{Random Access Turing Machines}
+\section{From RTMs to Frugal RTMs}
 
 \begin{defn}
-  (Random-access Turing Machine, RTM.) An RTM is a turing machine with
-  three linear tapes called the main tape, the address tape and the
-  auxillary tape,such that the head of the main tape(the main head) is
-  always on the cell whose number is the contents of the address
-  tape. An instruction for an RTM has the form
-  \begin{equation}
-    (p,\alpha_1,\alpha_2,\alpha_3) \rightarrow (q,\beta_1,\beta_2,\beta_3,\gamma_1,\gamma_1)
-  \end{equation}
-  and means the following: If the control state is $p$ and the symbols
-  in the observed cells on the three tapes are binary digits
-  $\alpha_1,\alpha_2,\alpha_3$ respectively, then print binary digits
-  $ \beta_1,\beta_2,\beta_3$ in the respective cells, move the address
-  head to the left, ( resp. to the right) if $\gamma_1$ = -1
-  (resp. $\gamma_1$ = 1), move the auxillary-tape head with respect to
-  $\gamma_2$ and go to control state $q$.
+  (Random-access Turing Machine, RTM.) We use verbatim\footnote{There
+    are a couple of typos in Gurevich's paper; we have corrected them
+    in the presentation here.} the definition from
+  \cite{DBLP:conf/ershov/GurevichS89}:
+
+  \begin{quote}
+    An RTM is a Turing machine with three linear tapes called the
+    \emph{main tape}, the \emph{address tape} and the \emph{auxiliary
+      tape}, such that the head of the main tape (the \emph{main
+      head}) is always on the cell whose number is the contents of the
+    address tape. An instruction for an RTM has the form
+    \begin{equation*}
+      (p,\alpha_1,\alpha_2,\alpha_3) \rightarrow
+      (q,\beta_1,\beta_2,\beta_3,\gamma_1,\gamma_2)
+    \end{equation*}
+    and means the following: If the control state is $p$ and the
+    symbols in the observed cells on the three tapes are binary digits
+    $\alpha_1,\alpha_2,\alpha_3$ respectively, then print binary
+    digits $\beta_1,\beta_2,\beta_3$ in the respective cells, move the
+    address head to the left (resp. to the right) if $\gamma_1=-1$
+    (resp. $\gamma_1=1$), move the auxiliary-tape head with respect
+    to $\gamma_2$ and go to control state $q$.
+  \end{quote}
 \end{defn}
 
 \begin{defn}
-  (Frugal RTM.) An RTM is frugal if at any time t, the length of the
-  address tape and the length of the auxillary tape are both $O(log
-  t)$
+  (Frugal RTM.) An RTM is called \emph{frugal} if at any time $t$, the
+  lengths of the address tape and of the auxiliary tape are both
+  bounded by $O(\log t)$.
 \end{defn}
 
 \begin{thm}
@@ -107,10 +115,10 @@ n$, where $n$ is the length of the input.
 \end{thm}
 
 \begin{proof}
-  (Not in Ravi's presentation; to be shown in future presentations.)
+  ((I'll write this up ---tonyg))
 \end{proof}
 
-\section{Random access TMs to Multi-tape TMs}
+\section{From Frugal RTMs to Multi-tape TMs}
 
 Simulating a computation on a frugal RTM using a multi-tape TM is
 carried out by non-deterministically guessing the sequence of steps on
@@ -189,7 +197,7 @@ computation.
 (t,q_t,a_t,I_t,b_t,J_t,c_t): t < T(n)
 \]
   such that at time $t$, the TM is in state $q_t$, the address tape
-  contents is $a_t$ with the head at $I_t$, the auxillary tape
+  contents is $a_t$ with the head at $I_t$, the auxiliary tape
   contents is $b_t$ with the head at $J_t$ and the character under the
   head of the main tape is $c_t$.
 \end{defn}
@@ -215,7 +223,7 @@ computation.
   \item $b_t$ is also of size $O(log T(n)$ by definition
   \item $I_t$ is a number representing a location on the address tape
     and therefore also of size $O(log T(n)$
-  \item $I_t$ is a number representing a location on the auxillary tape
+  \item $I_t$ is a number representing a location on the auxiliary tape
     and therefore also of size $O(log T(n)$
   \item $c_t$ has constant size and depends only on the size of the
     alphabet handled by $M$
@@ -229,10 +237,10 @@ computation.
   \begin{defn}
     A tuple $(t^{'}, q^{'}, a^{'}, I^{'}, b^{'}, J^{'}, c^{'})$ is
     consistent with the tuple $(t, q, a, I, b, J, c)$ if when in state q
-    with address tape a with head at position I, auxillary tape B with
+    with address tape a with head at position I, auxiliary tape B with
     head at position J and observing character c on the main tape, $M$
     transitions to state $q^{'}$, updates the address tape to $a^{'}$
-    and moves its head to position $I^{'}$, updates the auxillary tape
+    and moves its head to position $I^{'}$, updates the auxiliary tape
     to $b^{'}$ and moves its head to position $J^{'}$.
   \end{defn}
 
