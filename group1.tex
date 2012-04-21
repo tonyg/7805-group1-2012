@@ -1,0 +1,118 @@
+\documentclass[english]{article}
+\usepackage{mathpazo}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm}
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\makeatletter
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{plain}
+\newtheorem{lem}[thm]{Lemma}
+\makeatother
+
+\usepackage{babel}
+
+\begin{document}
+
+\title{7805 Class project, 2012: Group 1}
+\author{Group 1}
+\maketitle
+
+Main goal: any function computable in time $T(n)$ on a nondeterministic
+random-access turing machine (RTM) is computable in time $T(n)(\log T(n))^{O(1)}$
+on an $k$-tape nondeterministic non-random-access turing machine.
+
+\begin{defn}
+(Random-access Turing Machine, RTM.) 3 tapes - main, address and auxiliary.
+Head position of main tape is equal to the contents of the cell at
+the current position of the address tape.
+\end{defn}
+
+\begin{defn}
+(Frugal RTM.) At time $t$, the lengths of the address and auxiliary
+tapes are $O(\log t)$.
+\end{defn}
+
+\begin{defn}
+(Efficient simulation.) ...
+\end{defn}
+
+\begin{thm}
+Frugal RTMs can efficiently simulate RTMs.
+\end{thm}
+
+\begin{proof}
+(Not in Ravi's presentation; to be shown in future presentations.)
+\end{proof}
+
+\begin{lem}
+Let $\ell$ be a list of natural numbers, and let $C(\ell)$ be the
+binary encoding of $\ell$. Then, $\ell$ can be sorted in time $C(\ell)\log|\ell|$.
+\end{lem}
+
+\begin{proof}
+(To be shown in future presentations.)
+\end{proof}
+
+\begin{thm}
+$k$-tape nondeterministic TMs can efficiently simulate (nondet???)
+Frugal RTMs.
+\end{thm}
+
+\begin{proof}
+Let $M$ be a frugal RTM accepting some language $L$ in time $T(n)$.
+If $c$ is a computation of $M$, then $c$ is a sequence of tuples
+of the form $(t,q_{t},a_{t},I_{t},b_{t},J_{t},c_{t})$, where
+
+\begin{itemize}
+ \item $t$ is time, $1\leq t\leq T(n)$
+ \item $q_{t}$ is state at time $t$
+ \item $a_{t},b_{t}$ are the \emph{entire} contents of address and auxiliary
+   tapes, respectively
+ \item $I_{t},J_{t}$ are positions of heads of address and auxiliary tapes,
+   respectively
+ \item $c_{t}$ is the observed symbol on the main tape at time $t$.
+\end{itemize}
+ 
+Note that the number of bits needed to represent a tuple in $c$ is
+bounded by $\log T(n)$ in a frugal RTM.
+
+(Define a $k$-tape N TM s.t. ... guesses the tuple sequence ... checks
+it for consistency ...?)
+
+To check some sequence $c$ as defined above for consistency,
+ 
+\begin{enumerate}
+ \item Check that the first tuple is consistent with the input
+ \item Check that the $t+1$st tuple is consistent with the $t$th tuple,
+   for every $t$
+ \item $q_{T(n)}$ should be an accepting state.
+\end{enumerate}
+
+Note that we \emph{don't} check the $c_{t}$ in each tuple here, because
+of the random-access head movements on the main tape. Once the checks
+here complete, however, we go back and check the $c_{t}$ for consistency.
+To do so,
+
+\begin{enumerate}
+ \item Sort the sequence of tuples first by the contents of the address tape,
+   $a_{t}$, and then by time, $t$. (So groups with equal $a_{t}$ are
+   formed, and $t$ increases within each group.)
+ \item check ...?
+ \item check for consistency with the input ... somehow?
+\end{enumerate}
+
+\end{proof}
+
+%% \bibliographystyle{plainnat}
+%% \bibliography{../../MendeleyCollection}
+
+\end{document}
