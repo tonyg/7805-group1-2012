@@ -35,15 +35,30 @@
 We show that any function computable in time $T(n)$ on a
 nondeterministic random-access Turing machine (RTM) is computable in
 time $T(n)(\log T(n))^{O(1)}$ on a $k$-tape nondeterministic
-non-random-access Turing machine. The core idea is to efficiently
-simulate some machine model that allows random access using a model
-lacking random access.
+non-random-access Turing machine.\footnote{$T(n)(\log T(n))^{O(1)}$
+  doesn't quite line up with the definition of efficient simulation
+  below! It's stricter; can we actually achieve this stricter bound?
+  Or should we relax our goal to be polylog-overhead, as per the
+  definition of efficient simulation?}
+The core idea is to efficiently simulate some machine model that
+allows random access using a model lacking random access.
 
 \begin{defn}
-  (Efficient simulation, after \cite{DBLP:conf/ershov/GurevichS89}) ...
-Here efficient simulation means that the overhead of
-simulation is bounded by a polynomial of the logarithm of the runtime
-of the machine being simulated. 
+  %% Verbatim text retyped from Gurevich:
+  %%
+  %% ``... one often checks that any T(n)-time-bounded machine of one
+  %% kind can be simulated by some machine of the other kind in time
+  %% T(n)h(n) where the overhead h(n) is bounded by a polynomial of
+  %% T(n) or even n. ... It is often the case that the overhead h(n)
+  %% is bounded by polynomial of the logarithm of T(n); let us call
+  %% such simulations efficient.''
+
+  (Efficient simulation, after \cite{DBLP:conf/ershov/GurevichS89}.) A
+  machine of some kind that is $T(n)$-time-bounded is said to be
+  \emph{efficiently simulated} by some machine of another kind when
+  the simulating machine is time-bounded by a polynomial of $\log
+  T(n)$; that is, when the overhead of simulation is bounded by a
+  polylog function of $n$.
 \end{defn}
 
 Although we start from a specific machine, RTM (defined formally
@@ -61,7 +76,7 @@ where $k>1$. In order to accomplish this, we prove and make use of the
 fact that a non-deterministic Turing machine can sort in time $n \log
 n$, where $n$ is the length of the input.
 
-\section{Random Access Turing Machines}	
+\section{Random Access Turing Machines}
 
 \begin{defn}
   (Random-access Turing Machine, RTM.) An RTM is a turing machine with
