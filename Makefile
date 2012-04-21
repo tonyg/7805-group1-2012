@@ -1,6 +1,8 @@
-group1.pdf: group1.tex
+all: group1.pdf
+
+%.pdf: %.tex %.bib
 	pdflatex $<
-	pdflatex $<
+	bibtex $*.aux
 	pdflatex $<
 
 clean:

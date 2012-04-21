@@ -8,6 +8,7 @@
 \geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{natbib}
 
 \makeatletter
 \theoremstyle{plain}
@@ -20,39 +21,45 @@
 
 \usepackage{babel}
 
+%%\setlength{\parindent}{0pt}
+%%\setlength{\parskip}{2ex}
+
 \begin{document}
 
 \title{7805 Class project, 2012: Group 1}
 \author{Group 1}
 \maketitle
 
-Main goal of this project is to show that any function computable in
-time $T(n)$ on a nondeterministic random-access turing machine (RTM)
-is computable in time $T(n)(\log T(n))^{O(1)}$ on a $k$-tape
-nondeterministic non-random-access turing machine.
-
 \section{Overview}
 
-In general the idea is to go from some machine model that allows
-random access to one that does not have randomness, efficiently. Here
-efficiently means that the overhead on the simulation s is bounded by
-a polynomial of the logarithm of the runtime on the machine being
-simulated. Although in this project we go from a specific machine -
-RTM - it is possible to prove that a number of variants namely RAC
-(Random Access Computer), Kolmogorov Machines and Schonage machines
-all efficiently simulate each other and therefore share the same
-notion of $n^k$ computability (for some $k \in \mathbb{N}$). \\
+We show that any function computable in time $T(n)$ on a
+nondeterministic random-access Turing machine (RTM) is computable in
+time $T(n)(\log T(n))^{O(1)}$ on a $k$-tape nondeterministic
+non-random-access Turing machine. The core idea is to efficiently
+simulate some machine model that allows random access using a model
+lacking random access.
+
+\begin{defn}
+  (Efficient simulation, after \cite{DBLP:conf/ershov/GurevichS89}) ...
+Here efficient simulation means that the overhead of
+simulation is bounded by a polynomial of the logarithm of the runtime
+of the machine being simulated. 
+\end{defn}
+
+Although we start from a specific machine, RTM (defined formally
+below), it is shown in \cite{DBLP:conf/ershov/GurevichS89} that a
+number of variants, namely RAC (Random Access Computer), Kolmogorov
+machines and Sch\"{o}nhage machines, all efficiently simulate each
+other and therefore share the same notion of $n^{O(1)}$ computability.
 
 We first define the notion of a non-deterministic RTM. We then define
-a variant of RTM called the Frugal RTM. We show that every computation
-running in time $T(n)$ on an RTM can be simulated in time $T(n) (log
-T(n))^k, k \in \mathbb{N}$. We then show how any computation in time
-$T(n)$ on a non-deterministic frugal RTM can be simulated on a k-tape
-non-deterministic TM in time $T(n) (log T(n))^k, k \in \mathbb{N}$. We
-are not concerned on the specific number of tapes used as long as it
-greater than 1. In order to accomplish this, we make use of the fact
-that a non-deterministic TM can sort in time $n logn$ where $n$ is the
-length of the input. We provide a proof of why this is true as well.
+a variant of RTM called a frugal RTM, and show that every specific RTM
+can be efficiently simulated by some frugal RTM. Finally, we show how
+any computation using a \emph{non-deterministic} frugal RTM can be
+efficiently simulated on a $k$-tape non-deterministic Turing machine,
+where $k>1$. In order to accomplish this, we prove and make use of the
+fact that a non-deterministic Turing machine can sort in time $n \log
+n$, where $n$ is the length of the input.
 
 \section{Random Access Turing Machines}	
 
@@ -250,7 +257,7 @@ computation.
   efficiently.
 \end{proof}
 
-%% \bibliographystyle{plainnat}
-%% \bibliography{../../MendeleyCollection}
+\bibliographystyle{plainnat}
+\bibliography{group1}
 
 \end{document}
