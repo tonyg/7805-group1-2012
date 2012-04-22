@@ -127,82 +127,128 @@ n$, where $n$ is the length of the input.
 
 \section{From Nondeterministic Frugal RTMs to Nondeterministic Multi-tape TMs}
 
-In the previous section, we had been considering deterministic Turing
-machines. We now switch to considering their non-deterministic
-counterparts.
-
-\begin{defn}
-  (Non-deterministic Turing machines.) ((Describe the nondeterministic
-  input $y$, and how the pair $(x,y)$ is checked by the machine, where
-  the deterministic machine would compute $y$ from $x$.))
-\end{defn}
-
 Simulating a computation on a frugal RTM using a multi-tape TM is
 carried out by non-deterministically guessing the sequence of steps on
-the computation and then check for the correctness of the
-sequence. However in order to do the later, we need multi-tape TMs to
+the computation and then checking for the correctness of the
+sequence. However in order to do the latter, we need multi-tape TMs to
 be able to sort efficiently.
 
 \begin{lem}
-  Let $\ell$ be a list of natural numbers, and let $C(\ell)$ be the
-  binary encoding of $\ell$. Then, $\ell$ can be sorted in time
-  $C(\ell)\log|\ell|$.
+  Let $\ell$ be a list of natural numbers of length $|\ell|$ numbers,
+  and let $C(\ell)$ be an encoding of $\ell$, of length $|C(\ell)|$
+  symbols. Then, $\ell$ can be sorted by a nondeterministic multi-tape
+  Turing machine in time $O(|C(\ell)|\log|\ell|)$.
 \end{lem}
 
 \begin{proof}
-  In the following let $[n]$ = $\{1,2,\ldots n\}$. Let $\ell$ = $(l_i
-  \in N: i \in [m])$ be a list(sequence of natural numbers $(l_1,l_2,
-  \ldots l_m)$. Then the binary encoding $C(\ell)$ $\in K^*$ is
-  defined as
+  In the following let $[n] = \{1,2,\ldots n\}$. Let $\ell = (l_i \in
+  N: i \in [m])$ be a list (sequence) of natural numbers $(l_1,l_2,
+  \ldots l_m)$. Then the encoding $C(\ell)$ $\in \Sigma^*$ is defined
+  as
 \[
-C(\ell) = \overline{c(l_1)},\overline{c(l_2)}, \ldots \overline{c(l_m)}
+C(\ell) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
 \]
+  where $\Sigma$, the input alphabet to our sorting machine, is the
+  set including $0$ and $1$ as well as the pound symbol ($\#$), and
+  $c(v)$ is the binary representation of $v \in \mathbb{N}$. For
+  example, $C((1,2,13))=1\#10\#1101\#$.
 
-  where $c(v)$ is the binary representation of $v \in \mathbb{N}$ and
-  $\overline{x}$ is the doubled sequence which is associated with x
-  (E.g. if x = 101 then $\overline{x}$ = 110011).This is done in order
-  to identify where one number ends and the next begins. Let $|\ell|$
-  be the number of elements in the list $\ell$.\\
+  We define $\Gamma$, our tape alphabet, to be $\Sigma$ with the
+  addition of the symbol comma ($,$). We proceed using an algorithm
+  based on merge sort, where we repeatedly merge adjacent sorted
+  sublists until just one list remains. At the $i$th iteration over
+  the input, the sublists we consider have length $2^{i-1}$.
 
-  We use a procedure similar to merge sort in a number of stage. In
-  the first stage we sort the first and second element, the third and
-  fourth and so on. In the second state we sort the first four
-  elements, the next four and so on. Thus at stage $n$ we sort
-  sequences of length $2^n$ which is made easier by the fact that the
-  first $2^{n-1}$ and similarly the next $2^{n-1}$ elements are alread
-  sorted. We assume the existence of four tapes which are used as
-  follows:\\
+  We choose to use three tapes: the first, main, tape holds the input
+  and the partial outputs at each iteration, and the second and third
+  tapes are used as working space to hold the sublists to be merged. \\
 
-  First Tape - Holds the input and the partial outputs at every stage
+  The operation of the machine in each iteration is as follows:
 
-  Second Tape - Holds the first $2^{n-1}$ elements when at stage $n$
+  \begin{enumerate}
+    \item \label{iteration-start} Return the heads to the beginnings
+      of the tapes.
+    \item \label{process-sublist} If we are at the end of the main
+      tape, then
+      \begin{itemize}
+        \item if we haven't yet processed any sublists during this
+          iteration, the original input was empty. Halt, since an
+          empty list is always sorted.
+        \item otherwise, go to step \ref{iteration-start}.
+      \end{itemize}
+    \item Copy symbols from the main tape to the second tape until a
+      pound symbol is seen.
+    \item If the end of the tape follows the pound symbol we just saw,
+      then
+      \begin{itemize}
+        \item if this was the first sublist we processed during this
+          iteration, then we are done: the input has been
+          sorted. Halt.
+        \item otherwise, we have an odd number of sublists. The final
+          iteration of the algorithm will take care of this
+          case. Return to step \ref{iteration-start}.
+      \end{itemize}
+    \item Otherwise, copy symbols from the main tape to the third tape
+      until a pound symbol is seen.
+    \item Return the heads of the second and third tapes to the
+      beginning, and move the head of the main tape back over the two
+      sublists just copied to the first symbol of the first sublist of
+      the two.
+    \item \label{merge-loop} If the symbol on the second tape is the
+      pound symbol, place a comma on the main tape and then copy
+      symbols from the third tape onto the main tape until we see a
+      pound symbol on the third tape also. Place a pound symbol on the
+      main tape and go to step \ref{process-sublist}.
+    \item Otherwise, if the symbol on the third tape is the pound
+      symbol, place a comma on the main tape and then copy symbols
+      from the second tape onto the main tape until we see a pound
+      symbol on the second tape also. Place a pound symbol on the main
+      tape and go to step \ref{process-sublist}.
+    \item Otherwise, compare the encodings of the numbers under the
+      heads of the second and third tapes. If the smaller is the
+      element from the second tape, copy it to the main tape;
+      otherwise, copy the element from the third tape. Place a comma
+      on the main tape. Rewind whichever of the tapes did not have an
+      element copied from it so that its element will be compared
+      again next time round. Go to step \ref{merge-loop}.
+  \end{enumerate}
 
-  Third Tape - Holds the second $2^{n-1}$ elements when at stage $n$
+  If there are an even number of pound-symbol-delimited sublists in
+  the input, then they are of equal length at the start of each
+  iteration; and if there are an odd number in the input, then all but
+  one will have equal length. To see this, consider that as the
+  algorithm begins, all sublists are of length 1, and as it proceeds,
+  each pair of length $x$ sublists is replaced by a single length $2x$
+  sublist, except for any odd-man-out at the end of the input, which
+  will not be processed until the final iteration.
 
-  Fourth Tape - Keeps a count of the stages so that we know the length
-  of the elements to be copied over to the second and the third
-  tapes.This also holds the length of each element on the list.\\
+  It remains to be shown that the machine takes time
+  $O(|C(\ell)|\log|\ell|)$. We can see that there will be
+  $log_2|\ell|$ iterations, since each iteration halves the number of
+  remaining sublists until a single sublist remains. Each iteration
+  will take $O(|C(\ell)|)$ steps, since every element of the input is
+  examined on each iteration, and $O(1)$ steps are needed to perform
+  the necessary copyings and comparisons for each element of the
+  input. Combining these two observations gives us the required bound.
 
-  Each comparison process goes as follows: Based on the count of the
-  stages from the fourth tape we copy the first $2^{n-1}$ onto tape
-  two and the next $2^{n-1}$ elements onto tape three. Then we compare
-  the first two elements on the two tapes bit by bit and transfer the
-  minimum element onto the main tape to its corresponding
-  position. The the heands of the second tape and third tape are moved
-  to the least elements on their lists and this process continues.\\
+%% Each comparison process goes as follows: Based on the count of the
+%% stages from the fourth tape we copy the first $2^{n-1}$ onto tape two
+%% and the next $2^{n-1}$ elements onto tape three. Then we compare the
+%% first two elements on the two tapes bit by bit and transfer the
+%% minimum element onto the main tape to its corresponding position. The
+%% the heads of the second tape and third tape are moved to the least
+%% elements on their lists and this process continues.
 
-  More formally in stage $i$ we sort the segments
-
-\[
-\ell(k,i) = \{l_j: k2^i \leq j < k2^i + 2^i\} for k \leq |\ell|/2^i
-\]
-
-  by merging the ordered segments $\ell(2k,i - 1),\ell(2k + 1,i - 1)$
-  which have been generated at stage $i - 1$. This requires $O(log
-  |\ell|)$ stages beginning with stage 1. Since merging of to lists
-  can be done within linear time, each stage can be done within
-  $O(|C(\ell)|)$ steps.
 \end{proof}
+
+((Is this next definition even required?))
+
+\begin{defn}
+  (Non-deterministic multi-tape Turing machines.) ((Describe the
+  nondeterministic input $y$, and how the pair $(x,y)$ is checked by
+  the machine, where the deterministic machine would compute $y$ from
+  $x$.))
+\end{defn}
 
 We first define the trace of a random access TM computation which
 informally is the sequence of states that the machine is in during a
