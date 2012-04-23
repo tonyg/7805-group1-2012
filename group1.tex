@@ -40,15 +40,17 @@
 \section{Overview}
 
 We show that any function computable in time $T(n)$ on a
-nondeterministic random-access Turing machine (RTM) is computable in
-time $T(n)(\log T(n))^{O(1)}$ on a $k$-tape nondeterministic
-non-random-access Turing machine.\footnote{$T(n)(\log T(n))^{O(1)}$
-  doesn't quite line up with the definition of efficient simulation
-  below! It's stricter; can we actually achieve this stricter bound?
-  Or should we relax our goal to be polylog-overhead, as per the
-  definition of efficient simulation?}
-The core idea is to efficiently simulate some machine model that
-allows random access using a model lacking random access.
+nondeterministic\footnote{Perhaps we'd better specify this in terms of
+  the deterministic, Y-using, approach, where $|Y|=|X|\log|X|^c$?}
+random-access Turing machine (RTM) is computable in time $T(n)(\log
+T(n))^{O(1)}$ on a $k$-tape nondeterministic non-random-access Turing
+machine.\footnote{$T(n)(\log T(n))^{O(1)}$ doesn't quite line up with
+  the definition of efficient simulation below! It's stricter; can we
+  actually achieve this stricter bound?  Or should we relax our goal
+  to be polylog-overhead, as per the definition of efficient
+  simulation?}\footnote{Or wait, maybe it \emph{is} equivalent after
+  all!}  The core idea is to efficiently simulate some machine model
+that allows random access using a model lacking random access.
 
 \begin{defn}
   %% Verbatim text retyped from Gurevich:
