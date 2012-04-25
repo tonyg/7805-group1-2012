@@ -39,18 +39,13 @@
 
 \section{Overview}
 
-We show that any function computable in time $T(n)$ on a
-nondeterministic\footnote{Perhaps we'd better specify this in terms of
-  the deterministic, Y-using, approach, where $|Y|=|X|\log|X|^c$?}
-random-access Turing machine (RTM) is computable in time $T(n)(\log
-T(n))^{O(1)}$ on a $k$-tape nondeterministic non-random-access Turing
-machine.\footnote{$T(n)(\log T(n))^{O(1)}$ doesn't quite line up with
-  the definition of efficient simulation below! It's stricter; can we
-  actually achieve this stricter bound?  Or should we relax our goal
-  to be polylog-overhead, as per the definition of efficient
-  simulation?}\footnote{Or wait, maybe it \emph{is} equivalent after
-  all!}  The core idea is to efficiently simulate some machine model
-that allows random access using a model lacking random access.
+We show that any function computable in time $T(n)$ on a Random-Access
+Computer (RAC, defined formally below) is computable in time
+$T(n)(\log T(n))^{O(1)}$ on a $k$-tape nondeterministic
+sequential-access Turing machine. We provide a chain of simulating
+machines, each of which efficiently simulates the preceding machine,
+leading from our initial random-access machine model to our final
+sequential-access model.
 
 \begin{defn}
   %% Verbatim text retyped from Gurevich:
@@ -70,29 +65,62 @@ that allows random access using a model lacking random access.
   polylog function of $n$.
 \end{defn}
 
-Although we start from a specific machine, RTM (defined formally
-below), it is shown in \cite{DBLP:conf/ershov/GurevichS89} that a
-number of variants, namely RAC (Random Access Computer), Kolmogorov
-machines and Sch\"{o}nhage machines, all efficiently simulate each
-other and therefore share the same notion of $n^k$ computability,
+Although we start from a specific machine, RAC, it is shown in
+\cite{DBLP:conf/ershov/GurevichS89} that a number of variants,
+including random-access Turing machines, Kolmogorov machines and
+Sch\"{o}nhage machines, all efficiently simulate each other and
+therefore share the same notion of $n^k$ computability,
 $k\in\mathbb{N}$.
 
-We first define the notion of a non-deterministic RTM. We then define
-a variant of RTM called a frugal RTM, and show that every specific RTM
-can be efficiently simulated by some frugal RTM. Finally, we show how
-any computation using a \emph{non-deterministic} frugal RTM can be
-efficiently simulated on a $k$-tape non-deterministic Turing machine,
-where $k>1$. In order to accomplish this, we prove and make use of the
-fact that a non-deterministic Turing machine can sort in time $n \log
-n$, where $n$ is the length of the input.
+\subsection*{Outline}
 
-\section{From RTMs to Frugal RTMs}
+We first define the machine models we will be using: random-access
+computers, random-access Turing machines (RTMs), and $k$-tape
+sequential-access Turing machines. We then show that every specific
+instance of the RAC model can be simulated by an RTM, and furthermore
+that the simulating RTM's behavior is bounded in certain ways that
+will be important to the proof of our main claim. Finally, we show
+that any computation performed by an RTM can be efficiently simulated
+on a $k$-tape \emph{non-deterministic} Turing machine, where $k>1$. In
+order to accomplish this, we prove and make use of the fact that a
+non-deterministic Turing machine can sort in time $n \log n$, where
+$n$ is the length of the input.
+
+\section{Definitions: RAC, $\ell$-bit RTM, $k$-tape TM}
 
 \begin{defn}
-  (Random-access Turing Machine, RTM.) We use verbatim\footnote{There
-    are a couple of typos in Gurevich's paper; we have corrected them
-    in the presentation here.} the definition from
-  \cite{DBLP:conf/ershov/GurevichS89}:
+  (Random-access Computer, RAC.) A random-access computer is, quoting
+  \cite{DBLP:conf/ershov/GurevichS89}, ``an abstract machine with a
+  sequence of memory locations'', where the size of each memory cell
+  and the number of such cells varies with the size of the input to
+  the machine. In particular, each memory cell is $\ell$ bits wide,
+  where $\ell=c \log n$ and $n$ is the size of the input. Furthermore,
+  there are exactly $2^\ell$ memory cells available, meaning that the
+  size of each cell is exactly large enough to represent any address
+  in the machine's memory space.
+
+  RACs are similar in spirit to the CPUs we use in our day-to-day work
+  with desktop computers. Time in an RAC is measured in terms of the
+  number of instructions executed. In order to be precise about the
+  simulations we will be defining, we choose to pin down a few details
+  omitted in \cite{DBLP:conf/ershov/GurevichS89}:
+
+  \begin{itemize}
+    \item Our RAC will have a fixed number of $\ell$-bit registers.
+
+    \item The instructions in our RAC will be \textsc{Load},
+      \textsc{Store}, and the usual register-to-register arithmetic
+      operations and control transfers. Our primary concern will be
+      with memory accesses, so the exact instruction set other than
+      loads and stores is not important.
+  \end{itemize}
+\end{defn}
+
+\begin{defn}
+  ($\ell$-bit Random-access Turing Machine, $\ell$-bit RTM.) We use
+  verbatim\footnote{There are a couple of typos in Gurevich's paper;
+    we have corrected them in the presentation here.} the definition
+  of an RTM from \cite{DBLP:conf/ershov/GurevichS89}:
 
   \begin{quote}
     An RTM is a Turing machine with three linear tapes called the
@@ -112,44 +140,68 @@ n$, where $n$ is the length of the input.
     (resp. $\gamma_1=1$), move the auxiliary-tape head with respect
     to $\gamma_2$ and go to control state $q$.
   \end{quote}
+
+  We extend Gurevich and Shelah's definition with the constraint that
+  both the address and the auxiliary tapes are bounded so as to be no
+  longer than $O(\ell)$ bits each.\footnote{Note that this is
+    different to the class of \emph{frugal} RTMs, defined as part of
+    the chain of machines in \cite{DBLP:conf/ershov/GurevichS89}. The
+    lengths of the address and auxiliary tapes in a frugal RTM are
+    bounded by $O(\log t)$ at every moment in the operation of the
+    machine; we do not rely on such a strict bound here, so do not
+    further consider frugal RTMs as defined by Gurevich and Shelah.}
 \end{defn}
 
 \begin{defn}
-  (Frugal RTM.) An RTM is called \emph{frugal} if at any time $t$, the
-  lengths of the address tape and of the auxiliary tape are both
-  bounded by $O(\log t)$.
+  ($k$-tape sequential-access Turing machines, $k$-tape TMs.) A
+  $k$-tape TM is a Turing machine with $k$ linear tapes, each of which
+  has a corresponding head, which is constrained to move one cell at a
+  time along its tape, just like a normal single-tape Turing
+  machine. Instructions for $k$-tape TMs have the form
+  \begin{equation*}
+    (p,\alpha_1,\alpha_2,...\alpha_k) \rightarrow
+    (q,\beta_1,\beta_2,...\beta_k,\gamma_1,\gamma_2,...\gamma_k)
+  \end{equation*}
+  where $p$ is the control state, the $\alpha$s are the contents of
+  the cells under the heads of the $k$ tapes, $q$ is the resulting
+  control state, the $\beta$s are to be written into the cells under
+  the heads, and the $\gamma$s control each head's movements in the
+  same way as they do for RTMs as defined above.
 \end{defn}
 
-\begin{thm}
-  Frugal RTMs can efficiently simulate RTMs.
-\end{thm}
+\section{Efficient simulation of RACs using $\ell$-bit RTMs}
+
+\begin{lem}
+  RACs with $\ell$-bit memory cells can be efficiently simulated by
+  $\ell$-bit RTMs.
+\end{lem}
 
 \begin{proof}
   ((I'll write this up ---tonyg))
 \end{proof}
 
-\section{From Nondeterministic Frugal RTMs to Nondeterministic Multi-tape TMs}
+\section{Efficient simulation of $\ell$-bit RTMs using non-deterministic $k$-tape TMs}
 
-Simulating a computation on a frugal RTM using a multi-tape TM is
-carried out by non-deterministically guessing the sequence of steps on
-the computation and then checking for the correctness of the
-sequence. However in order to do the latter, we need multi-tape TMs to
-be able to sort efficiently.
+Simulating a computation on an $\ell$-bit RTM using a multi-tape TM is
+carried out by non-deterministically guessing the sequence of steps
+involved in the computation and then checking the correctness of the
+guess. However in order to do the latter, we need multi-tape TMs to be
+able to sort efficiently.
+
+\subsection{Efficient sorting}
 
 \begin{lem}
-  Let $\ell$ be a list of natural numbers of length $|\ell|$ numbers,
-  and let $C(\ell)$ be an encoding of $\ell$, of length $|C(\ell)|$
-  symbols. Then, $\ell$ can be sorted by a nondeterministic multi-tape
-  Turing machine in time $O(|C(\ell)|\log|\ell|)$.
+  Let $L$ be a list containing $|L|$ natural numbers, and let $C(L)$
+  be an encoding of $L$, of length $|C(L)|$ symbols. Then, $L$ can be
+  sorted by a $k$-tape TM in time $O(|C(L)|\log|L|)$.
 \end{lem}
 
 \begin{proof}
-  In the following let $[n] = \{1,2,\ldots n\}$. Let $\ell = (l_i \in
-  N: i \in [m])$ be a list (sequence) of natural numbers $(l_1,l_2,
-  \ldots l_m)$. Then the encoding $C(\ell)$ $\in \Sigma^*$ is defined
-  as
+  In the following let $[n] = \{1,2,\ldots n\}$. Let $L = (l_i \in N:
+  i \in [m])$ be a list (sequence) of natural numbers $(l_1,l_2,
+  \ldots l_m)$. Then the encoding $C(L)$ $\in \Sigma^*$ is defined as
 \[
-C(\ell) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
+C(L) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
 \]
   where $\Sigma$, the input alphabet to our sorting machine, is the
   set including $0$ and $1$ as well as the pound symbol ($\#$), and
@@ -226,13 +278,13 @@ C(\ell) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
   will not be processed until the final iteration.
 
   It remains to be shown that the machine takes time
-  $O(|C(\ell)|\log|\ell|)$. We can see that there will be
-  $log_2|\ell|$ iterations, since each iteration halves the number of
-  remaining sublists until a single sublist remains. Each iteration
-  will take $O(|C(\ell)|)$ steps, since every element of the input is
-  examined on each iteration, and $O(1)$ steps are needed to perform
-  the necessary copyings and comparisons for each element of the
-  input. Combining these two observations gives us the required bound.
+  $O(|C(L)|\log|L|)$. We can see that there will be $log_2|L|$
+  iterations, since each iteration halves the number of remaining
+  sublists until a single sublist remains. Each iteration will take
+  $O(|C(L)|)$ steps, since every element of the input is examined on
+  each iteration, and $O(1)$ steps are needed to perform the necessary
+  copyings and comparisons for each element of the input. Combining
+  these two observations gives us the required bound.
 
 %% Each comparison process goes as follows: Based on the count of the
 %% stages from the fourth tape we copy the first $2^{n-1}$ onto tape two
@@ -244,39 +296,64 @@ C(\ell) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
 
 \end{proof}
 
-((Is this next definition even required?))
+%% ((Is this next definition even required?))
+
+%% \begin{defn}
+%%   (Non-deterministic multi-tape Turing machines.) ((Describe the
+%%   nondeterministic input $y$, and how the pair $(x,y)$ is checked by
+%%   the machine, where the deterministic machine would compute $y$ from
+%%   $x$.))
+%% \end{defn}
+
+\subsection{Traces of the operation of $\ell$-bit RTMs}
+
+Informally, the \emph{trace} of an $\ell$-bit RTM computation is the
+sequence of states that the machine passes through during a
+computation, including the relevant portions of the machine's tapes.
 
 \begin{defn}
-  (Non-deterministic multi-tape Turing machines.) ((Describe the
-  nondeterministic input $y$, and how the pair $(x,y)$ is checked by
-  the machine, where the deterministic machine would compute $y$ from
-  $x$.))
+  (Traces.) The trace of an $\ell$-bit RTM computation is the sequence
+  of tuples
+  \[
+  (t,q_t,a_t,I_t,b_t,J_t,c_t): t < T(n)
+  \]
+  such that at time $t$,
+  \begin{itemize}
+    \item the TM is in state $q_t$,
+    \item the contents of the address tape are $a_t$,
+    \item the address tape's head is positioned at $I_t$,
+    \item the contents of the auxiliary tape are $b_t$,
+    \item the auxiliary head's position is $J_t$, and
+    \item the character under the head of the main tape is $c_t$.
+  \end{itemize}
 \end{defn}
 
-We first define the trace of a random access TM computation which
-informally is the sequence of states that the machine is in during a
-computation.
+Note that $a_t$ and $b_t$ are $O(\ell)$ bits long, by the definition
+of an $\ell$-bit RTM.
 
 \begin{defn}
-  The trace T of a random-access TM computation is the sequence of tupes
-\[
-(t,q_t,a_t,I_t,b_t,J_t,c_t): t < T(n)
-\]
-  such that at time $t$, the TM is in state $q_t$, the address tape
-  contents is $a_t$ with the head at $I_t$, the auxiliary tape
-  contents is $b_t$ with the head at $J_t$ and the character under the
-  head of the main tape is $c_t$.
+  (Consistency of tuples.) A tuple $(t, q', a', I', b', J', c')$ is
+  \emph{consistent} with the tuple $(t+1, q, a, I, b, J, c)$ if, when
+  the machine is in the state described by the first tuple at time
+  $t$, each of $q$, $a$, $I$, $b$ and $J$ \emph{could} result from the
+  operation of the machine's transition function given the inputs
+  $q'$, $a'$, $I'$, $b'$ and $J'$.
 \end{defn}
+
+Note that $c'$ and $c$ are not checked as part of this definition:
+they are dealt with separately below.
+
+\subsection{Main result}
 
 \begin{thm}
-  $k$-tape nondeterministic TMs can efficiently simulate
-  non-deterministic Frugal RTMs.
+  $k$-tape nondeterministic TMs can efficiently simulate $\ell$-bit
+  RTMs.
 \end{thm}
 
 \begin{proof}
-  Let $M$ be a frugal RTM and $M^{'}$ be the non-deterministic
+  Let $M$ be a frugal RTM and $M'$ be the non-deterministic
   mutli-tape TM on which we are going to simulate the computation on
-  $M$. The input $x$ is on one if its tapes. $M^{'}$ guesses traces
+  $M$. The input $x$ is on one if its tapes. $M'$ guesses traces
   for the computation of $M$ on input $x$, guessing tuples in order
   from $t = 0$ to $T(n)$. Since $M$ is frugal each tuple requires
   guessing a $O(polylog T(n))$ amount of information. This is because
@@ -295,20 +372,10 @@ computation.
     alphabet handled by $M$
   \end{itemize}
 
-  $M^{'}$ giess the 6-tuples one by one and checks that the first tuple
+  $M'$ giess the 6-tuples one by one and checks that the first tuple
   is correct, and every t+1-st tuple is consistent with the t-th one and
   $q_{T(n)}$ is accepting. The notion of consistency is defined as
   follows
-
-  \begin{defn}
-    A tuple $(t^{'}, q^{'}, a^{'}, I^{'}, b^{'}, J^{'}, c^{'})$ is
-    consistent with the tuple $(t, q, a, I, b, J, c)$ if when in state q
-    with address tape a with head at position I, auxiliary tape B with
-    head at position J and observing character c on the main tape, $M$
-    transitions to state $q^{'}$, updates the address tape to $a^{'}$
-    and moves its head to position $I^{'}$, updates the auxiliary tape
-    to $b^{'}$ and moves its head to position $J^{'}$.
-  \end{defn}
 
   Note that we \emph{don't} check the $c_{t}$ in each tuple here,
   because of the random-access head movements on the main tape. Once the
@@ -323,10 +390,10 @@ computation.
     efficiently.
   \item For each block (with the same value of $a_{t}$ and increasing
     $t$) we first check if the $c_t$ component of the first tuple is
-    the same as the character $M^{'}$ observes under its input
+    the same as the character $M'$ observes under its input
     head. If this is not the case reject.
   \item For two consecutive tuples within the same block, let $c$ be
-    the $c_t$ component of the first tuple and $c^{'}$ be the
+    the $c_t$ component of the first tuple and $c'$ be the
     corresponding component on the second tuple. Then either of the
     following must be true
     \begin{enumerate}
