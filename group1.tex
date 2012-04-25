@@ -5,7 +5,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[letterpaper]{geometry}
-\geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm}
+%% \geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm}
 \usepackage{amsthm}
 \usepackage{amsmath}
 
@@ -39,13 +39,14 @@
 
 \section{Overview}
 
-We show that any function computable in time $T(n)$ on a Random-Access
-Computer (RAC, defined formally below) is computable in time
-$T(n)(\log T(n))^{O(1)}$ on a $k$-tape nondeterministic
-sequential-access Turing machine. We provide a chain of simulating
-machines, each of which efficiently simulates the preceding machine,
-leading from our initial random-access machine model to our final
-sequential-access model.
+We show that any function computable in time $T(n)$ on a
+non-deterministic random-access computer (as defined below) is
+computable in time $T(n)(\log T(n))^{O(1)}$ on a non-deterministic
+$k$-tape sequential-access Turing machine.\footnote{We restrict
+  ourselves to considering situations where $T(n) \geq n$.} We provide
+a chain of simulating machines, each of which efficiently simulates
+the preceding machine, leading from our initial random-access machine
+model to our final sequential-access model.
 
 \begin{defn}
   %% Verbatim text retyped from Gurevich:
@@ -65,7 +66,8 @@ sequential-access model.
   polylog function of $n$.
 \end{defn}
 
-Although we start from a specific machine, RAC, it is shown in
+Although we start from a specific machine model, that of a
+random-access computer, it is shown in
 \cite{DBLP:conf/ershov/GurevichS89} that a number of variants,
 including random-access Turing machines, Kolmogorov machines and
 Sch\"{o}nhage machines, all efficiently simulate each other and
@@ -75,16 +77,17 @@ $k\in\mathbb{N}$.
 \subsection*{Outline}
 
 We first define the machine models we will be using: random-access
-computers, random-access Turing machines (RTMs), and $k$-tape
+computers (RACs), random-access Turing machines (RTMs), and $k$-tape
 sequential-access Turing machines. We then show that every specific
-instance of the RAC model can be simulated by an RTM, and furthermore
-that the simulating RTM's behavior is bounded in certain ways that
-will be important to the proof of our main claim. Finally, we show
-that any computation performed by an RTM can be efficiently simulated
-on a $k$-tape \emph{non-deterministic} Turing machine, where $k>1$. In
-order to accomplish this, we prove and make use of the fact that a
-non-deterministic Turing machine can sort in time $n \log n$, where
-$n$ is the length of the input.
+instance of the RAC model can be efficiently simulated by an RTM, and
+furthermore that the simulating RTM's behavior is bounded in certain
+ways that will be important to the proof of our main claim. Finally,
+we move to a non-deterministic setting and show that any computation
+performed by a non-deterministic RTM can be efficiently simulated on a
+non-deterministic $k$-tape Turing machine, where $k>1$. In order to
+accomplish this, we prove and make use of the fact that $k$-tape
+Turing machines can sort in time $n \log n$, where $n$ is the length
+of the input.
 
 \section{Definitions: RAC, $\ell$-bit RTM, $k$-tape TM}
 
@@ -94,10 +97,11 @@ $n$ is the length of the input.
   sequence of memory locations'', where the size of each memory cell
   and the number of such cells varies with the size of the input to
   the machine. In particular, each memory cell is $\ell$ bits wide,
-  where $\ell=c \log n$ and $n$ is the size of the input. Furthermore,
-  there are exactly $2^\ell$ memory cells available, meaning that the
-  size of each cell is exactly large enough to represent any address
-  in the machine's memory space.
+  where $\ell=c \log n$, $c$ is a constant specific to the particular
+  machine being considered, and $n$ is the size of the machine's
+  input. Furthermore, there are exactly $2^\ell$ memory cells
+  available, meaning that the size of each cell is exactly large
+  enough to represent any address in the machine's memory space.
 
   RACs are similar in spirit to the CPUs we use in our day-to-day work
   with desktop computers. Time in an RAC is measured in terms of the
@@ -108,19 +112,20 @@ $n$ is the length of the input.
   \begin{itemize}
     \item Our RAC will have a fixed number of $\ell$-bit registers.
 
-    \item The instructions in our RAC will be \textsc{Load},
-      \textsc{Store}, and the usual register-to-register arithmetic
-      operations and control transfers. Our primary concern will be
-      with memory accesses, so the exact instruction set other than
-      loads and stores is not important.
+    \item The instructions in our RAC will be \textsc{Load} from
+      memory to register, \textsc{Store} from register to memory, the
+      usual register-to-register arithmetic operations, and control
+      transfers. Our primary concern will be with memory accesses, so
+      the exact instruction set other than loads and stores is not
+      important.
   \end{itemize}
 \end{defn}
 
 \begin{defn}
-  ($\ell$-bit Random-access Turing Machine, $\ell$-bit RTM.) We use
-  verbatim\footnote{There are a couple of typos in Gurevich's paper;
-    we have corrected them in the presentation here.} the definition
-  of an RTM from \cite{DBLP:conf/ershov/GurevichS89}:
+  ($\ell$-bit Random-access Turing Machine, $\ell$-bit RTM.) We start
+  from the verbatim\footnote{There are a couple of typos in Gurevich's
+    paper; we have corrected them in the presentation here.}
+  definition of an RTM from \cite{DBLP:conf/ershov/GurevichS89}:
 
   \begin{quote}
     An RTM is a Turing machine with three linear tapes called the
@@ -177,20 +182,65 @@ $n$ is the length of the input.
 \end{lem}
 
 \begin{proof}
-  ((I'll write this up ---tonyg))
+  Since RACs with $\ell$-bit memory cells also have exactly $2^\ell$
+  such cells, we simulate the action of the RAC's memory with the main
+  tape of our RTM. The main tape is logically divided into $2^\ell$
+  $\ell$-bit-wide sections, each corresponding to one memory cell in
+  the simulated RAC. The auxiliary tape of the RTM is used to hold the
+  registers of the RAC and also to perform arithmetic involved in the
+  execution of RAC instructions.
+
+  The RAC's instructions are then encoded into the state transition
+  function of the RTM. Control transfer instructions can be encoded
+  directly in the state transition function, and register-to-register
+  arithmetic and logic instructions can be performed in $O(\ell)$
+  space and $O(\ell^2)$ time on the auxiliary tape. The remaining
+  instructions are \textsc{Load} and \textsc{Store}.
+
+  Each \textsc{Load} instruction takes $O(\ell)$ time to copy from a
+  register held on the auxiliary tape to the address tape. Once the
+  copy is completed, $\ell$ adjacent bits must be copied from the main
+  tape to the auxiliary tape, which involves $\ell$ transfers of a
+  single bit and $\ell$ incrementations of the value held on the
+  address tape. Transferring one bit takes worst-case $O(\ell)$ time
+  for the head to move back and forth to the right location on the
+  auxiliary tape, since the tape itself has length bounded by
+  $O(\ell)$, and incrementing the address tape's value takes
+  worst-time $O(\ell)$ steps, so overall the process of copying the
+  $\ell$ bits from the main to the auxiliary tape takes a total of
+  $O(\ell^2)$ time. In summary, then the \textsc{Load} instruction as
+  a whole takes time bounded by $O(\ell^2)$. The time bound for
+  \textsc{Store} instructions is the same, since the copying of the
+  bits simply takes place in reverse.
+
+  Since every class of instruction can be completed in $O(\ell^2)$
+  time, we see that the simulation completes in $O(T(n)
+  \ell^2)$. Recalling that $\ell=c \log n$, and $T(n) \geq n$ by
+  assumption, we see that this is equivalent to saying the simulation
+  completes in $O(T(n) (c \log T(n))^2)$, which is itself equivalent
+  to $O(T(n)(\log T(n))^{O(1)})$, which is what is required for the
+  definition of efficient simulation to apply.
 \end{proof}
 
-\section{Efficient simulation of $\ell$-bit RTMs using non-deterministic $k$-tape TMs}
+\section{Efficient simulation of non-deterministic $\ell$-bit RTMs using non-deterministic $k$-tape TMs}
 
-Simulating a computation on an $\ell$-bit RTM using a multi-tape TM is
-carried out by non-deterministically guessing the sequence of steps
-involved in the computation and then checking the correctness of the
-guess. However in order to do the latter, we need multi-tape TMs to be
-able to sort efficiently.
+Simulating a computation on a non-deterministic $\ell$-bit RTM using a
+non-deterministic multi-tape TM is carried out by using the
+non-deterministic input to the latter to \emph{guess} the sequence of
+steps involved in the former's computation and then checking the
+correctness of the guess. However, in order to do the latter, we need
+to show that multi-tape TMs can sort efficiently.
+
+We proceed in this section by first getting the question of efficient
+sorting out of the way, and then being more precise about the kind of
+non-determinism we are using. We then formally define the way the
+simulating machine represents the steps taken by the simulated RTM,
+and finally we bring all the pieces together to show our main result.
 
 \subsection{Efficient sorting}
 
 \begin{lem}
+  \label{efficient-sorting-lemma}
   Let $L$ be a list containing $|L|$ natural numbers, and let $C(L)$
   be an encoding of $L$, of length $|C(L)|$ symbols. Then, $L$ can be
   sorted by a $k$-tape TM in time $O(|C(L)|\log|L|)$.
@@ -285,6 +335,7 @@ C(L) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
   each iteration, and $O(1)$ steps are needed to perform the necessary
   copyings and comparisons for each element of the input. Combining
   these two observations gives us the required bound.
+\end{proof}
 
 %% Each comparison process goes as follows: Based on the count of the
 %% stages from the fourth tape we copy the first $2^{n-1}$ onto tape two
@@ -294,16 +345,15 @@ C(L) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
 %% the heads of the second tape and third tape are moved to the least
 %% elements on their lists and this process continues.
 
-\end{proof}
+\subsection{Non-determinism}
 
-%% ((Is this next definition even required?))
-
-%% \begin{defn}
-%%   (Non-deterministic multi-tape Turing machines.) ((Describe the
-%%   nondeterministic input $y$, and how the pair $(x,y)$ is checked by
-%%   the machine, where the deterministic machine would compute $y$ from
-%%   $x$.))
-%% \end{defn}
+\begin{defn}
+  We define a \emph{non-deterministic} Turing machine $M$ to be the
+  equivalent of some other deterministic machine $M$ whenever $M$
+  accepts some input $x$ in $T(n)$ steps \emph{if and only if} there
+  exists some additional input $y$ of size bounded by $O(T(n)\log
+  T(n)^{O(1)})$ such that $M'$ accepts $(x,y)$.
+\end{defn}
 
 \subsection{Traces of the operation of $\ell$-bit RTMs}
 
@@ -312,32 +362,28 @@ sequence of states that the machine passes through during a
 computation, including the relevant portions of the machine's tapes.
 
 \begin{defn}
-  (Traces.) The trace of an $\ell$-bit RTM computation is the sequence
-  of tuples
+  (Traces and trace tuples.) The trace of an $\ell$-bit RTM
+  computation is the sequence of trace tuples
   \[
   (t,q_t,a_t,I_t,b_t,J_t,c_t): t < T(n)
   \]
-  such that at time $t$,
-  \begin{itemize}
-    \item the TM is in state $q_t$,
-    \item the contents of the address tape are $a_t$,
-    \item the address tape's head is positioned at $I_t$,
-    \item the contents of the auxiliary tape are $b_t$,
-    \item the auxiliary head's position is $J_t$, and
-    \item the character under the head of the main tape is $c_t$.
-  \end{itemize}
+  such that at time $t$, the TM is in state $q_t$, the contents of the
+  address tape are $a_t$, the address tape's head is positioned at
+  $I_t$, the contents of the auxiliary tape are $b_t$, the auxiliary
+  head's position is $J_t$, and the character under the head of the
+  main tape is $c_t$.
 \end{defn}
 
-Note that $a_t$ and $b_t$ are $O(\ell)$ bits long, by the definition
-of an $\ell$-bit RTM.
+Note that $a_t$ and $b_t$ are each $O(\ell)$ bits long, by the
+definition of an $\ell$-bit RTM.
 
 \begin{defn}
-  (Consistency of tuples.) A tuple $(t, q', a', I', b', J', c')$ is
-  \emph{consistent} with the tuple $(t+1, q, a, I, b, J, c)$ if, when
-  the machine is in the state described by the first tuple at time
-  $t$, each of $q$, $a$, $I$, $b$ and $J$ \emph{could} result from the
-  operation of the machine's transition function given the inputs
-  $q'$, $a'$, $I'$, $b'$ and $J'$.
+  (Consistency of trace tuples.) A tuple $(t, q', a', I', b', J', c')$
+  is \emph{consistent} with the tuple $(t+1, q, a, I, b, J, c)$ if,
+  when the machine is in the state described by the first tuple at
+  time $t$, each of $q$, $a$, $I$, $b$ and $J$ \emph{could} result
+  from the operation of the machine's transition function given the
+  inputs $q'$, $a'$, $I'$, $b'$ and $J'$.
 \end{defn}
 
 Note that $c'$ and $c$ are not checked as part of this definition:
@@ -346,71 +392,87 @@ they are dealt with separately below.
 \subsection{Main result}
 
 \begin{thm}
-  $k$-tape nondeterministic TMs can efficiently simulate $\ell$-bit
-  RTMs.
+  $k$-tape nondeterministic TMs can efficiently simulate
+  non-deterministic $\ell$-bit RTMs.
 \end{thm}
 
 \begin{proof}
-  Let $M$ be a frugal RTM and $M'$ be the non-deterministic
-  mutli-tape TM on which we are going to simulate the computation on
-  $M$. The input $x$ is on one if its tapes. $M'$ guesses traces
-  for the computation of $M$ on input $x$, guessing tuples in order
-  from $t = 0$ to $T(n)$. Since $M$ is frugal each tuple requires
-  guessing a $O(polylog T(n))$ amount of information. This is because
+  Let $M$ be an $\ell$-bit RTM and $M'$ be the non-deterministic
+  $k$-tape TM intended to simulate the action of $M$. The input
+  $(x,y)$, incorporating both the original input $x$ and the
+  non-deterministic contribution $y$ to $M$, is placed on one of the
+  tapes of $M'$, along with a further non-deterministic contribution
+  $y'$. $M'$ uses $y'$ to construct a guess of a possible trace for
+  the computation of $M$ on input $(x,y)$, guessing tuples in order
+  from $t = 0$ through $t = T(n)$. Since $M$'s address and auxiliary
+  tapes are bounded in size by $O(\ell)$, and $\ell$ is bounded by a
+  polylog function of $T(n)$, each tuple to be guessed consumes at
+  most polylog $T(n)$ bits of information from $y'$. In other words,
 
   \begin{itemize}
-  \item $t$ is a number between $0$ and $T(n)$ and requires $log T(n)$
-    bits
-  \item $q_t$ has constant size and only depends on $M$
-  \item $a_t$ is of size $O(log T(n)$ by definition
-  \item $b_t$ is also of size $O(log T(n)$ by definition
-  \item $I_t$ is a number representing a location on the address tape
-    and therefore also of size $O(log T(n)$
-  \item $I_t$ is a number representing a location on the auxiliary tape
-    and therefore also of size $O(log T(n)$
+  \item $t$ is a number between $0$ and $T(n)$ and therefore requires
+    $\log T(n)$ bits
+  \item $q_t$ has constant size and depends only on the definition of
+    $M$
+  \item $a_t$ has size bounded by $O(\log T(n))$ by definition
+  \item $b_t$ is also bounded by $O(\log T(n))$ by definition
+  \item $I_t$ is a number representing a location on the address tape,
+    at most $O(\log T(n))$, and so is of size $O(\log \log T(n))$
+  \item $J_t$ is a number representing a location on the auxiliary
+    tape, therefore is also of size $O(\log \log T(n))$
   \item $c_t$ has constant size and depends only on the size of the
     alphabet handled by $M$
   \end{itemize}
+  so the overall size of each tuple is bounded by $O(\log T(n))$.
 
-  $M'$ giess the 6-tuples one by one and checks that the first tuple
-  is correct, and every t+1-st tuple is consistent with the t-th one and
-  $q_{T(n)}$ is accepting. The notion of consistency is defined as
-  follows
+  $M'$ guesses the trace tuples one by one, performing an initial
+  correctness-check as it goes by making sure that the first tuple is
+  correct, that each subsequent tuple is consistent with its
+  predecessor, and finally that the last tuple in the trace has
+  $q_{T(n)}$ an accepting state.
 
-  Note that we \emph{don't} check the $c_{t}$ in each tuple here,
-  because of the random-access head movements on the main tape. Once the
-  checks here complete, however, we go back and check the $c_{t}$ for
-  consistency. To do so,
+  Recall that when we defined trace tuple consistency above, we
+  explicitly neglected to check the $c_t$ in each tuple. The reason
+  for this is that the main tape's head accesses the main tape in a
+  random-access fashion rather than sequentially. Once the initial
+  pass over the generated trace is complete, however, we go back and
+  check the $c_{t}$ for consistency. To do so,
 
   \begin{enumerate}
-  \item Sort the sequence of tuples first by the contents of the
-    address tape, $a_{t}$, and then by time, $t$. (So groups with
-    equal $a_{t}$ are formed, and $t$ increases within each group.) By
-    lemma 4, we know that this sorting process can be carried out
-    efficiently.
-  \item For each block (with the same value of $a_{t}$ and increasing
-    $t$) we first check if the $c_t$ component of the first tuple is
-    the same as the character $M'$ observes under its input
-    head. If this is not the case reject.
-  \item For two consecutive tuples within the same block, let $c$ be
-    the $c_t$ component of the first tuple and $c'$ be the
-    corresponding component on the second tuple. Then either of the
-    following must be true
+  \item Sort the trace first by the contents of the address tape,
+    $a_t$, and then by time, $t$. After this process, groups with
+    equal $a_t$ will exist, with each tuple's $t$ increasing within
+    each group. By lemma \ref{efficient-sorting-lemma}, we know that
+    this sorting process can be carried out efficiently.
+  \item For each block with the same value of $a_t$ and increasing
+    $t$, we first check that the $c_t$ component of the first tuple is
+    the same as the character $M'$ observes on its copy of the
+    original input to the machine at address $a_t$. If this is not the
+    case, our trace is inconsistent with the operation of $M$.
+  \item For two adjacent tuples within the same block, let $c$ be the
+    $c_t$ component of the first tuple and $c'$ be the corresponding
+    component on the second tuple. Then, for the pair of tuples to be
+    consistent with each other, one of the following conditions must
+    hold:
     \begin{enumerate}
-    \item $c = c{'}$ if the computation corresponding to the first
-      tuple did not write any characters onto the main tape
-    \item $c \neq c{'}$ but the latter is equal to the character
-      written on the main tape by the computation corresponding to the
-      first tuple
+    \item $c = c'$ and the computation following from application of
+      $M$'s transition function to the first tuple would not have
+      altered the main tape at $a_t$; or
+    \item $c \neq c'$, and the transition function applied to the
+      first tuple would have written exactly $c'$ at $a_t$.
     \end{enumerate}
-    If either of them is not true, then reject.
   \end{enumerate}
 
-  If each group of tuples is consistent, then the entire computation is
-  valid and we accept. Also since this consistency check on the
-  characters can be done in time proportional to the length of the
-  sorted sequence of tuples, the entire process can be carried out
-  efficiently.
+  If each $a_t$-group of tuples is consistent, then the entire trace
+  represents a legitimate accepting execution of $M$, and so $M'$
+  accepts.
+
+  Since we generate the trace in time $T(n)$, perform the first
+  consistency-check pass in $O(T(n))$, sort the trace in $O(T(n) \log
+  T(n))$, and perform the second consistency-check pass in $O(T(n))$,
+  we see that the overall process has time bounded by $O(T(n) \log
+  T(n))$, which is a polylog overhead compared to $T(n)$, and so the
+  whole process is an efficient simulation.
 \end{proof}
 
 \bibliographystyle{plain}
