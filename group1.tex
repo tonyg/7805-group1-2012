@@ -218,7 +218,7 @@ of the input.
   \ell^2)$. Recalling that $\ell=c \log n$, and $T(n) \geq n$ by
   assumption, we see that this is equivalent to saying the simulation
   completes in $O(T(n) (c \log T(n))^2)$, which is itself equivalent
-  to $O(T(n)(\log T(n))^{O(1)})$, which is what is required for the
+  to $T(n)(\log T(n))^{O(1)}$, which is what is required for the
   definition of efficient simulation to apply.
 \end{proof}
 
@@ -351,8 +351,8 @@ C(L) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
   We define a \emph{non-deterministic} Turing machine $M$ to be the
   equivalent of some other deterministic machine $M$ whenever $M$
   accepts some input $x$ in $T(n)$ steps \emph{if and only if} there
-  exists some additional input $y$ of size bounded by $O(T(n)\log
-  T(n)^{O(1)})$ such that $M'$ accepts $(x,y)$.
+  exists some additional input $y$ of size bounded by $T(n)(\log
+  T(n))^{O(1)}$ such that $M'$ accepts $(x,y)$.
 \end{defn}
 
 \subsection{Traces of the operation of $\ell$-bit RTMs}
