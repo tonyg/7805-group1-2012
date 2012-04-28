@@ -352,11 +352,15 @@ C(L) = c(l_1) \# c(l_2) \# \ldots c(l_m) \#
 \subsection{Non-determinism}
 
 \begin{defn}
-  We define a \emph{non-deterministic} Turing machine $M$ to be the
-  equivalent of some other deterministic machine $M$ whenever $M$
-  accepts some input $x$ in $T(n)$ steps \emph{if and only if} there
-  exists some additional input $y$ of size bounded by $T(n)(\log
-  T(n))^{O(1)}$ such that $M'$ accepts $(x,y)$.
+  We say Machine M \emph{non-deterministically accepts} language $L$,
+  if
+  \begin{itemize}
+    \item $\forall x \in L$, $\exists y$ whose size is bounded by
+      $n^{k_1} (\log n)^{k_2}$ for some fixed constants $k_1$ and
+      $k_2$ such that $M(x,y) = 1$, and
+    \item $\forall x \notin L$, $\forall y$ whose size is bounded as
+      given above, $M(x,y) = 0$.
+  \end{itemize}
 \end{defn}
 
 \subsection{Traces of the operation of $\ell$-bit RTMs}
